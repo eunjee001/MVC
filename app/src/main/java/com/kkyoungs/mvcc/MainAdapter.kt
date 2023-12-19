@@ -9,13 +9,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kkyoungs.mvcc.databinding.ItemNewsBinding
 
-class MainAdapter(val context: Context, val newsList : ArrayList<NewsData>, onClickListener: OnClickListener) : RecyclerView.Adapter<MainAdapter.ViewHolder>() {
-    var onClickListener : OnClickListener ?= null
+class MainAdapter(val context: Context, val newsList : ArrayList<NewsData>) : RecyclerView.Adapter<MainAdapter.ViewHolder>() {
     private var binding: ItemNewsBinding? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         binding = ItemNewsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-
         return ViewHolder(binding!!.root)
     }
 
@@ -24,7 +22,7 @@ class MainAdapter(val context: Context, val newsList : ArrayList<NewsData>, onCl
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val news : NewsData = newsList.get(position)
+        val news  = newsList[position]
         binding!!.title.text = news.title
         val description = news.description
         if (!description.equals(null)){

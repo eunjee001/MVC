@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
@@ -18,18 +20,16 @@ import org.json.JSONObject
 class MainActivity : AppCompatActivity() {
     private val mBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private var adapter : MainAdapter ?= null
-    private var layoutManager : RecyclerView.LayoutManager ?= null
+
     var queue :RequestQueue ?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         //View 관련 메소드
         setContentView(mBinding.root)
-        mBinding.newsRecycler.setHasFixedSize(true)
-        layoutManager = LinearLayoutManager(this)
-        mBinding.newsRecycler.layoutManager = layoutManager
-        queue = Volley.newRequestQueue(this)
 
+        queue = Volley.newRequestQueue(this)
+        getNews()
     }
 
     private fun getNews(){
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         val stringRequest = StringRequest(
             Request.Method.GET,
             url,
-            Response.Listener<String>{
+            {
                  try {
                      val jsonObj = JSONObject(it)
                      val arrayArticles = jsonObj.getJSONArray("articles")
@@ -55,23 +55,20 @@ class MainActivity : AppCompatActivity() {
                          val newsData = NewsData(author, title, description, url, img, publishedAt,content)
                          news.add(newsData)
                      }
-                     adapter = MainAdapter(this, news, View.OnClickListener {
-                         val obj = adapter.tag
-                         if (obj != null){
-                             val position : Int = obj
-                             val intent = Intent(this, NewsPageActivity::class.java)
-                             intent.putExtra("news", adapter!!.getNews(position))
+                     adapter= MainAdapter(this, news)
+                     mBinding!!.newsRecycler.apply {
+                         adapter = adapter
+                         layoutManager = LinearLayoutManager(context)
 
-                         }
-
-                     })
+                     }
                  }   catch (e:JSONException){
                      e.printStackTrace()
                  }
             }
-            , Response.ErrorListener{
-
+            , {
+                Toast.makeText(this,"에러", Toast.LENGTH_SHORT).show()
 
         })
+        queue!!.add(stringRequest)
     }
 }
