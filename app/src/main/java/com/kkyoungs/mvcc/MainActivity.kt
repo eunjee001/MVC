@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                          news.add(newsData)
                      }
                      adapter= MainAdapter(this, news)
-                     mBinding!!.newsRecycler.apply {
+                     mBinding.newsRecycler.apply {
                          adapter = adapter
                          layoutManager = LinearLayoutManager(context)
 
